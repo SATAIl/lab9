@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Додати завдання</title>
+    <meta charset="UTF-8"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Скрипт запущено, отримуємо курси...");
+            fetch('/student/courses')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Помилка при отриманні курсів: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(courses => {
+                    console.log("Курси отримані:", courses);
+                    const tableBody = document.getElementById('coursesTableBody');
+
+                    if (!courses || courses.length === 0) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td colspan="3">Немає доступних курсів</td>`;
+                        tableBody.appendChild(row);
+                        return;
+                    }
+
+                    courses.forEach(course => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${course.name}</td>
+                        <td>${course.id}</td>
+                        <td>${course.teacherName}</td>
+                    `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Помилка завантаження курсів:', error);
+                    const tableBody = document.getElementById('coursesTableBody');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3">Не вдалося завантажити курси. Спробуйте пізніше.</td>`;
+                    tableBody.appendChild(row);
+                });
+        });
+    </script>
+</head>
+<body>
+<h2>Додати завдання до курсу</h2>
+
+<form action="/teacher/createAssignment" method="post">
+    <label for="teacherName">Ім'я викладача:</label>
+    <input type="text" id="teacherName" name="teacherName" required/>
+
+    <label for="courseId">ID курсу:</label>
+    <input type="number" id="courseId" name="courseId" required/>
+
+    <label for="title">Назва завдання:</label>
+    <input type="text" id="title" name="title" required />
+
+    <label for="content">Умова:</label>
+    <input type="text" id="content" name="content" required />
+
+    <button type="submit">Додати</button>
+</form>
+
+<h3>Доступні курси</h3>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Назва курсу</th>
+        <th>ID курсу</th>
+        <th>Ім'я викладача</th>
+    </tr>
+    </thead>
+    <tbody id="coursesTableBody">
+    </tbody>
+</table>
+
+<p><a href="/index.html">На головну</a></p>
+</body>
+</html>

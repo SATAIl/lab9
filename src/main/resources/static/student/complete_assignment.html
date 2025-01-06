@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Виконати завдання</title>
+    <meta charset="UTF-8"/>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Скрипт запущено, отримуємо завдання...");
+            fetch('http://localhost:8080/student/assignments')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Помилка при отриманні завдань: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(assignments => {
+                    console.log("Завдання отримані:", assignments);
+                    const tableBody = document.getElementById('assignmentsTableBody');
+
+                    if (!assignments || assignments.length === 0) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td colspan="3" style="text-align: center; font-style: italic; color: gray;">
+                                Немає доступних завдань
+                            </td>`;
+                        tableBody.appendChild(row);
+                        return;
+                    }
+
+                    assignments.forEach(assignment => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${assignment.courseName}</td>
+                            <td>${assignment.title}</td>
+                            <td>${assignment.id}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Помилка завантаження завдань:', error);
+                    const tableBody = document.getElementById('assignmentsTableBody');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="3" style="text-align: center; font-style: italic; color: red;">
+                            Не вдалося завантажити завдання. Спробуйте пізніше.
+                        </td>`;
+                    tableBody.appendChild(row);
+                });
+        });
+    </script>
+</head>
+<body>
+<h2>Виконати завдання</h2>
+
+<form action="/student/completeAssignment" method="post">
+    <label for="studentName">Ім'я студента:</label>
+    <input type="text" id="studentName" name="studentName" required />
+
+    <label for="assignmentId">ID завдання:</label>
+    <input type="number" id="assignmentId" name="assignmentId" required />
+
+    <button type="submit">Виконати</button>
+</form>
+
+<h3>Доступні завдання</h3>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Назва курсу</th>
+        <th>Назва завдання</th>
+        <th>ID завдання</th>
+    </tr>
+    </thead>
+    <tbody id="assignmentsTableBody">
+    </tbody>
+</table>
+
+<p><a href="/index.html">На головну</a></p>
+</body>
+</html>
