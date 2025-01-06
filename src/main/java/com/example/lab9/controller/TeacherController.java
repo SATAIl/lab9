@@ -52,12 +52,12 @@ public class TeacherController {
                                @RequestParam String courseName) {
         Optional<Teacher> teacherOpt = teacherService.findTeacherByName(teacherName);
         if (teacherOpt.isEmpty()) {
-            return "Error: Teacher with name '" + teacherName + "' not found!";
+            return "Помилка: вчитель із ім'ям '" + teacherName + "' не знайдено!";
         }
         Teacher teacher = teacherOpt.get();
         Course course = courseService.createCourse(courseName, teacher);
-        return "Course '" + course.getName() + "' created successfully (ID=" + course.getId() +
-                ") by teacher '" + teacher.getName() + "'";
+        return "Курс '" + course.getName() + "' створено успішно (ID=" + course.getId() +
+                ") вчителем '" + teacher.getName() + "'";
     }
 
     /**
@@ -76,22 +76,23 @@ public class TeacherController {
                                    @RequestParam String content) {
         Optional<Teacher> teacherOpt = teacherService.findTeacherByName(teacherName);
         if (teacherOpt.isEmpty()) {
-            return "Error: Teacher with name '" + teacherName + "' not found!";
+            return "Помилка: вчитель із ім'ям '" + teacherName + "' не знайдено!";
         }
         Teacher teacher = teacherOpt.get();
 
         Optional<Course> courseOpt = courseService.findById(courseId);
         if (courseOpt.isEmpty()) {
-            return "Error: Course with ID " + courseId + " not found!";
+            return "Помилка: курс з  ID " + courseId + " не знайдено!";
         }
         Course course = courseOpt.get();
 
         if (!course.getTeacher().getId().equals(teacher.getId())) {
-            return "Error: Teacher '" + teacherName + "' is not the author of course (ID=" + courseId + ")";
+            return "\n" +
+                    "Помилка: вчитель '" + teacherName + "' не автор (ID=" + courseId + ")";
         }
 
         Assignment a = assignmentService.createAssignment(title, content, course);
-        return "Assignment '" + a.getTitle() + "' added to course '" + course.getName() + "'.";
+        return "Завдання '" + a.getTitle() + "' додано до курсу '" + course.getName() + "'.";
     }
 
     /**

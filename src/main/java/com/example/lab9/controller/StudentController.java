@@ -76,25 +76,25 @@ public class StudentController {
     public String completeAssignment(@RequestParam String studentName, @RequestParam Long assignmentId) {
         Optional<Student> studentOpt = studentService.findStudentByName(studentName);
         if (studentOpt.isEmpty()) {
-            return "Error: Student with name '" + studentName + "' not found";
+            return "Помилка: учень із ім'ям '" + studentName + "' не знайдено";
         }
         Student student = studentOpt.get();
 
         Optional<Assignment> assignmentOpt = assignmentService.findById(assignmentId);
         if (assignmentOpt.isEmpty()) {
-            return "Error: Assignment with ID " + assignmentId + " not found";
+            return "Помилка: призначення з ідентифікатором " + assignmentId + " не знайдено";
         }
         Assignment assignment = assignmentOpt.get();
 
         if (!student.getCourses().contains(assignment.getCourse())) {
-            return "Error: Student '" + studentName + "' is not enrolled in course '" + assignment.getCourse().getName() + "'";
+            return "Помилка: студент '" + studentName + "'не зарахований на курс '" + assignment.getCourse().getName() + "'";
         }
 
         Optional<Assignment> updated = assignmentService.completeAssignment(assignmentId, student);
         if (updated.isPresent()) {
-            return "Assignment '" + updated.get().getTitle() + "' completed by student '" + studentName + "'";
+            return "Призначення '" + updated.get().getTitle() + "' виконано студентом '" + studentName + "'";
         } else {
-            return "Error: Assignment with ID " + assignmentId + " was not completed.";
+            return "Помилка: призначення з ID " + assignmentId + " не було завершено.";
         }
     }
 
